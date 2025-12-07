@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fake news alebo realita?</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-alt: #0b1120;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --danger: #f97373;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --correct: #059669;
+      --correct-soft: rgba(5, 150, 105, 0.18);
+      --wrong: #dc2626;
+      --wrong-soft: rgba(220, 38, 38, 0.18);
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: min(960px, 100%);
+      background: rgba(2, 6, 23, 0.96);
+      border-radius: 24px;
+      padding: 20px 22px 22px;
+      box-shadow:
+        0 30px 80px rgba(15, 23, 42, 0.8),
+        0 0 0 1px rgba(148, 163, 184, 0.12);
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    body.play-only .app-header {
+        justify-content: center;  /* title in the center */
+    }
+
+    body.play-only .tabs {
+        display: none;            /* hide Edit/Play buttons */
+    }
+
+
+    .app-title {
+      font-size: 36px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pill {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: inline-flex;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 3px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+
+    .tab {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+
+    .tab.active {
+      background: rgba(15, 23, 42, 1);
+      color: var(--text);
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.6);
+    }
+
+    .tab span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .body {
+      margin-top: 4px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* EDITOR LAYOUT */
+    .editor-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 210px) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .editor-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .question-list {
+      background: var(--bg-alt);
+      border-radius: var(--radius-lg);
+      padding: 10px 10px 8px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 360px;
+      overflow: hidden;
+    }
+
+    .ql-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .ql-header h2 {
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .primary-btn,
+    .secondary-btn {
+      border-radius: 999px;
+      border: none;
+      font-size: 20px;
+      padding: 6px 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .primary-btn {
+      background: var(--accent);
+      color: #020617;
+      font-weight: 500;
+      box-shadow:
+        0 12px 30px rgba(56, 189, 248, 0.35),
+        0 0 0 1px rgba(8, 47, 73, 0.9);
+        margin-top: 6px;
+    }
+
+    .primary-btn:hover {
+      background: #0ea5e9;
+      box-shadow:
+        0 16px 40px rgba(15, 23, 42, 0.4),
+        0 0 0 1px rgba(8, 47, 73, 1);
+      transform: translateY(-1px);
+    }
+
+    .primary-btn.small,
+    .secondary-btn.small {
+      font-size: 12px;
+      padding: 4px 9px;
+    }
+
+    .secondary-btn {
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.6);
+    }
+
+    .secondary-btn:hover {
+      color: var(--text);
+      border-color: rgba(148, 163, 184, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .secondary-btn.danger {
+      border-color: rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+    }
+
+    .question-list-scroll {
+      margin-top: 6px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .question-item {
+      width: 100%;
+      text-align: left;
+      border-radius: 10px;
+      padding: 7px 8px;
+      font-size: 12px;
+      border: 1px solid transparent;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--muted);
+      cursor: pointer;
+      margin-bottom: 5px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      transition: all 0.15s ease;
+    }
+
+    .question-item span {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: rgba(148, 163, 184, 0.9);
+    }
+
+    .question-item strong {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .question-item.active {
+      border-color: var(--accent);
+      background: rgba(8, 47, 73, 0.9);
+      color: var(--text);
+    }
+
+    .question-item:hover {
+      border-color: rgba(148, 163, 184, 0.6);
+    }
+
+    .question-editor {
+      background: var(--bg-alt);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 12px 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .question-editor h2 {
+      font-size: 15px;
+      font-weight: 500;
+      margin: 0 0 2px;
+    }
+
+    label.field-label {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--text);
+      padding: 7px 9px;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 40px;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    textarea {
+      min-height: 70px;
+    }
+
+    textarea:focus,
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.6);
+    }
+
+    .options-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .option-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-row input[type="text"] {
+      min-height: 34px;
+    }
+
+    .option-radio {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .badge {
+      font-size: 10px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--muted);
+    }
+
+    .points-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 2px;
+    }
+
+    .points-row label {
+      flex: 1;
+    }
+
+    .points-row input[type="number"] {
+      max-width: 90px;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    /* PLAY VIEW */
+    .play-view {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .play-section {
+      background: var(--bg-alt);
+      border-radius: var(--radius-xl);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 18px 18px 16px;
+      text-align: center;
+    }
+
+    .play-section h2 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .play-section p {
+      margin: 4px 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .quiz-card {
+      max-width: 800px;
+      margin: 0 auto;
+      border-radius: 20px;
+      padding: 18px 18px 16px;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.8),
+        0 0 0 1px rgba(15, 23, 42, 0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+    }
+
+    .quiz-card.correct {
+      background: radial-gradient(circle at top, var(--correct-soft) 0, #022c22 55%);
+      box-shadow:
+        0 24px 70px rgba(22, 163, 74, 0.7),
+        0 0 0 1px rgba(34, 197, 94, 0.9);
+    }
+
+    .quiz-card.wrong {
+      background: radial-gradient(circle at top, var(--wrong-soft) 0, #450a0a 55%);
+      box-shadow:
+        0 24px 70px rgba(220, 38, 38, 0.7),
+        0 0 0 1px rgba(248, 113, 113, 0.9);
+    }
+
+    .quiz-progress {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .quiz-progress span {
+      opacity: 0.9;
+    }
+
+    .quiz-question-text {
+      font-size: 30px;
+      font-weight: 400;
+      text-align: center;
+      margin-top: 30px;
+      margin-bottom: 30px;
+    }
+
+    .play-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 25px;
+      margin-top: 6px;
+    }
+
+    .answer-btn {
+      width: 100%;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.98);
+      padding: 10px 12px;
+      font-size: 25px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 42px;
+    }
+
+    .answer-btn span.label {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(30, 64, 175, 0.45);
+      color: #bfdbfe;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .answer-btn span.text {
+      flex: 1;
+    }
+
+    .answer-btn:hover {
+      border-color: var(--accent);
+      box-shadow:
+        0 12px 30px rgba(15, 23, 42, 0.8),
+        0 0 0 1px rgba(8, 47, 73, 0.8);
+      transform: translateY(-0.5px);
+    }
+
+    .answer-btn.disabled {
+      opacity: 0.65;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .result-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 6px 0 10px;
+      font-size: 20px;
+      color: var(--muted);
+      align-items: center;
+    }
+
+    .result-stats strong {
+      color: #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="app-title">
+        Fake news alebo realita?
+      </div>
+      <div class="tabs">
+        <button class="tab active" id="editTab">Edit <span>questions</span></button>
+        <button class="tab" id="playTab">Play <span>quiz</span></button>
+      </div>
+    </header>
+
+    <main class="body">
+      <!-- EDIT VIEW -->
+      <section id="editView">
+        <div class="editor-grid">
+          <aside class="question-list">
+            <div class="ql-header">
+              <h2>Questions</h2>
+              <button class="primary-btn small" id="addQuestionBtn">＋ Add</button>
+            </div>
+            <div class="question-list-scroll" id="questionList"></div>
+          </aside>
+
+          <section class="question-editor">
+            <h2>Edit selected question</h2>
+
+            <label class="field-label">
+              Question text
+              <textarea id="questionText" placeholder="Type the question here..."></textarea>
+            </label>
+
+            <div class="options-block">
+              <div class="option-row">
+                <input
+                  type="radio"
+                  class="option-radio"
+                  name="correctOption"
+                  id="correct0"
+                  value="0"
+                />
+                <input
+                  type="text"
+                  id="option0Text"
+                  placeholder="First option"
+                />
+                <span class="badge">Option A · correct?</span>
+              </div>
+
+              <div class="option-row">
+                <input
+                  type="radio"
+                  class="option-radio"
+                  name="correctOption"
+                  id="correct1"
+                  value="1"
+                />
+                <input
+                  type="text"
+                  id="option1Text"
+                  placeholder="Second option"
+                />
+                <span class="badge">Option B · correct?</span>
+              </div>
+            </div>
+
+            <div class="points-row">
+              <label class="field-label">
+                Points for this question
+                <input type="number" id="pointsInput" min="1" step="1" />
+              </label>
+              <button class="secondary-btn small danger" id="deleteQuestionBtn">
+                Delete
+              </button>
+            </div>
+
+            <p class="hint">
+              Tip: choose which option is correct with the radio button.
+              The player gets the points above only if they pick the correct option.
+            </p>
+          </section>
+        </div>
+      </section>
+
+      <!-- PLAY VIEW -->
+      <section id="playView" class="play-view hidden">
+        <section class="play-section" id="playStartScreen">
+          <h2>Hrať kvíz</h2>
+          <p id="quizSummaryText"></p>
+          <button class="primary-btn" id="startQuizBtn">Start</button>
+        </section>
+
+        <section class="play-section hidden" id="playQuestionScreen">
+          <div class="quiz-card" id="quizCard">
+            <div class="quiz-progress">
+              <span id="quizProgressLeft"></span>
+              <span id="quizProgressRight"></span>
+            </div>
+            <div class="quiz-question-text" id="playQuestionText"></div>
+            <div class="play-options">
+              <button class="answer-btn" data-index="0" id="answerBtn0">
+                <span class="label">A</span>
+                <span class="text"></span>
+              </button>
+              <button class="answer-btn" data-index="1" id="answerBtn1">
+                <span class="label">B</span>
+                <span class="text"></span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="play-section hidden" id="playResultScreen">
+          <h2>Váš výsledok</h2>
+          <div class="result-stats">
+            <div><strong id="resultScore"></strong></div>
+            <div id="resultDetail"></div>
+          </div>
+          <button class="secondary-btn" id="playAgainBtn">Hrať znova</button>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // --- Data model ---
+    const STORAGE_KEY = "twoOptionQuizData_v1";
+
+    /**
+     * A quiz item:
+     * {
+     *   id: number,
+     *   question: string,
+     *   options: [{ text: string, isCorrect: boolean }, { ... }],
+     *   points: number
+     * }
+     */
+    let quiz = loadQuizFromStorage();
+
+    let currentEditIndex = 0;
+
+    // Play state
+    let playIndex = 0;
+    let playScore = 0;
+    let playCorrectCount = 0;
+    let playWrongCount = 0;
+    let isAcceptingAnswers = true;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPlayOnly = urlParams.get("mode") === "play";
+
+
+    // --- DOM references ---
+    const editTab = document.getElementById("editTab");
+    const playTab = document.getElementById("playTab");
+    const editView = document.getElementById("editView");
+    const playView = document.getElementById("playView");
+
+    const questionListEl = document.getElementById("questionList");
+    const questionTextEl = document.getElementById("questionText");
+    const option0TextEl = document.getElementById("option0Text");
+    const option1TextEl = document.getElementById("option1Text");
+    const correct0El = document.getElementById("correct0");
+    const correct1El = document.getElementById("correct1");
+    const pointsInputEl = document.getElementById("pointsInput");
+
+    const addQuestionBtn = document.getElementById("addQuestionBtn");
+    const deleteQuestionBtn = document.getElementById("deleteQuestionBtn");
+
+    const playStartScreen = document.getElementById("playStartScreen");
+    const playQuestionScreen = document.getElementById("playQuestionScreen");
+    const playResultScreen = document.getElementById("playResultScreen");
+
+    const quizSummaryText = document.getElementById("quizSummaryText");
+    const quizCard = document.getElementById("quizCard");
+    const quizProgressLeft = document.getElementById("quizProgressLeft");
+    const quizProgressRight = document.getElementById("quizProgressRight");
+    const playQuestionText = document.getElementById("playQuestionText");
+    const answerBtn0 = document.getElementById("answerBtn0");
+    const answerBtn1 = document.getElementById("answerBtn1");
+
+    const resultScoreEl = document.getElementById("resultScore");
+    const resultDetailEl = document.getElementById("resultDetail");
+
+    const startQuizBtn = document.getElementById("startQuizBtn");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+
+    // --- Initialization ---
+    renderQuestionList();
+    loadQuestionIntoEditor(currentEditIndex);
+    updateQuizSummary();
+
+    if (isPlayOnly) {
+        document.body.classList.add("play-only");
+        editView.classList.add("hidden");
+        playView.classList.remove("hidden");
+    }
+
+    // --- Storage helpers ---
+    function loadQuizFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+          return [
+            {
+              id: Date.now(),
+              question: "Is the Earth round?",
+              options: [
+                { text: "Yes", isCorrect: true },
+                { text: "No", isCorrect: false }
+              ],
+              points: 1
+            }
+          ];
+        }
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed) || parsed.length === 0) {
+          throw new Error("Invalid data");
+        }
+        return parsed;
+      } catch (e) {
+        console.warn("Failed to load quiz from storage, using default.", e);
+        return [
+          {
+            id: Date.now(),
+            question: "Is the Earth round?",
+            options: [
+              { text: "Yes", isCorrect: true },
+              { text: "No", isCorrect: false }
+            ],
+            points: 1
+          }
+        ];
+      }
+    }
+
+    function saveQuizToStorage() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(quiz));
+      updateQuizSummary();
+    }
+
+    function getTotalPoints() {
+      return quiz.reduce((sum, q) => sum + (Number(q.points) || 0), 0);
+    }
+
+    // --- Editor rendering ---
+    function renderQuestionList() {
+      questionListEl.innerHTML = "";
+      quiz.forEach((q, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "question-item" + (index === currentEditIndex ? " active" : "");
+        const shortText = q.question.trim() || "(Empty question)";
+        btn.innerHTML = `
+          <span>Q${index + 1}</span>
+          <strong>${shortText}</strong>
+        `;
+        btn.addEventListener("click", () => {
+          currentEditIndex = index;
+          renderQuestionList();
+          loadQuestionIntoEditor(index);
+        });
+        questionListEl.appendChild(btn);
+      });
+    }
+
+    function loadQuestionIntoEditor(index) {
+      const q = quiz[index];
+      questionTextEl.value = q.question || "";
+      option0TextEl.value = q.options[0]?.text || "";
+      option1TextEl.value = q.options[1]?.text || "";
+      pointsInputEl.value = q.points ?? 1;
+
+      // Ensure exactly one correct option is selected
+      if (!q.options[0].isCorrect && !q.options[1].isCorrect) {
+        q.options[0].isCorrect = true;
+      }
+      correct0El.checked = !!q.options[0].isCorrect;
+      correct1El.checked = !!q.options[1].isCorrect;
+    }
+
+    // --- Editor events ---
+    questionTextEl.addEventListener("input", () => {
+      quiz[currentEditIndex].question = questionTextEl.value;
+      renderQuestionList();
+      saveQuizToStorage();
+    });
+
+    option0TextEl.addEventListener("input", () => {
+      quiz[currentEditIndex].options[0].text = option0TextEl.value;
+      saveQuizToStorage();
+    });
+
+    option1TextEl.addEventListener("input", () => {
+      quiz[currentEditIndex].options[1].text = option1TextEl.value;
+      saveQuizToStorage();
+    });
+
+    correct0El.addEventListener("change", () => {
+      if (correct0El.checked) {
+        quiz[currentEditIndex].options[0].isCorrect = true;
+        quiz[currentEditIndex].options[1].isCorrect = false;
+        saveQuizToStorage();
+      }
+    });
+
+    correct1El.addEventListener("change", () => {
+      if (correct1El.checked) {
+        quiz[currentEditIndex].options[0].isCorrect = false;
+        quiz[currentEditIndex].options[1].isCorrect = true;
+        saveQuizToStorage();
+      }
+    });
+
+    pointsInputEl.addEventListener("input", () => {
+      const val = parseInt(pointsInputEl.value, 10);
+      quiz[currentEditIndex].points = isNaN(val) || val <= 0 ? 1 : val;
+      pointsInputEl.value = quiz[currentEditIndex].points;
+      saveQuizToStorage();
+    });
+
+    addQuestionBtn.addEventListener("click", () => {
+      const newQuestion = {
+        id: Date.now(),
+        question: "",
+        options: [
+          { text: "", isCorrect: true },
+          { text: "", isCorrect: false }
+        ],
+        points: 1
+      };
+      quiz.push(newQuestion);
+      currentEditIndex = quiz.length - 1;
+      renderQuestionList();
+      loadQuestionIntoEditor(currentEditIndex);
+      saveQuizToStorage();
+    });
+
+    deleteQuestionBtn.addEventListener("click", () => {
+      if (quiz.length <= 1) {
+        alert("You must keep at least one question.");
+        return;
+      }
+      const confirmed = confirm("Delete this question?");
+      if (!confirmed) return;
+
+      quiz.splice(currentEditIndex, 1);
+      currentEditIndex = Math.max(0, currentEditIndex - 1);
+      renderQuestionList();
+      loadQuestionIntoEditor(currentEditIndex);
+      saveQuizToStorage();
+    });
+
+    // --- Tabs ---
+    editTab.addEventListener("click", () => {
+      setActiveTab("edit");
+    });
+
+    playTab.addEventListener("click", () => {
+        const url = window.location.pathname + "?mode=play";
+        window.open(url, "_blank");   // open quiz-only page in new tab
+    });
+
+
+    function setActiveTab(mode) {
+      if (mode === "edit") {
+        editTab.classList.add("active");
+        playTab.classList.remove("active");
+        editView.classList.remove("hidden");
+        playView.classList.add("hidden");
+      } else {
+        playTab.classList.add("active");
+        editTab.classList.remove("active");
+        editView.classList.add("hidden");
+        playView.classList.remove("hidden");
+      }
+    }
+
+    // --- Play mode ---
+    function updateQuizSummary() {
+      const total = quiz.length;
+      const points = getTotalPoints();
+      quizSummaryText.textContent = `Máte ${total} otázok ${total !== 1 ? "s" : ""}, celkom ${points} bod${points !== 1 ? "ov" : ""}.`;
+    }
+
+    startQuizBtn.addEventListener("click", () => {
+      if (!quiz.length) return;
+      playIndex = 0;
+      playScore = 0;
+      playCorrectCount = 0;
+      playWrongCount = 0;
+      isAcceptingAnswers = true;
+
+      playStartScreen.classList.add("hidden");
+      playResultScreen.classList.add("hidden");
+      playQuestionScreen.classList.remove("hidden");
+
+      quizCard.classList.remove("correct", "wrong");
+      renderCurrentPlayQuestion();
+    });
+
+    playAgainBtn.addEventListener("click", () => {
+      playStartScreen.classList.remove("hidden");
+      playResultScreen.classList.add("hidden");
+      playQuestionScreen.classList.add("hidden");
+    });
+
+    function renderCurrentPlayQuestion() {
+      const q = quiz[playIndex];
+      quizProgressLeft.textContent = `Otázka ${playIndex + 1} of ${quiz.length}`;
+      quizProgressRight.textContent = `Score: ${playScore}/${getTotalPoints()}`;
+      playQuestionText.textContent = q.question || "(Empty question)";
+      answerBtn0.querySelector(".text").textContent = q.options[0]?.text || "(Empty)";
+      answerBtn1.querySelector(".text").textContent = q.options[1]?.text || "(Empty)";
+      answerBtn0.classList.remove("disabled");
+      answerBtn1.classList.remove("disabled");
+    }
+
+    function handleAnswerClick(index) {
+      if (!isAcceptingAnswers) return;
+      isAcceptingAnswers = false;
+
+      const q = quiz[playIndex];
+      const chosen = q.options[index];
+      const isCorrect = !!chosen.isCorrect;
+
+      if (isCorrect) {
+        playScore += Number(q.points) || 0;
+        playCorrectCount++;
+        quizCard.classList.remove("wrong");
+        quizCard.classList.add("correct");
+      } else {
+        playWrongCount++;
+        quizCard.classList.remove("correct");
+        quizCard.classList.add("wrong");
+      }
+
+      answerBtn0.classList.add("disabled");
+      answerBtn1.classList.add("disabled");
+
+      setTimeout(() => {
+        quizCard.classList.remove("correct", "wrong");
+        playIndex++;
+        if (playIndex >= quiz.length) {
+          showResults();
+        } else {
+          isAcceptingAnswers = true;
+          renderCurrentPlayQuestion();
+        }
+      }, 850);
+    }
+
+    answerBtn0.addEventListener("click", () => handleAnswerClick(0));
+    answerBtn1.addEventListener("click", () => handleAnswerClick(1));
+
+    function showResults() {
+      playQuestionScreen.classList.add("hidden");
+      playResultScreen.classList.remove("hidden");
+
+      const totalPoints = getTotalPoints();
+      resultScoreEl.textContent = `Score: ${playScore} / ${totalPoints} bodov`;
+      resultDetailEl.textContent = `Správne: ${playCorrectCount} · Nesprávne: ${playWrongCount} · Otázky: ${quiz.length}`;
+    }
+  </script>
+</body>
+</html>

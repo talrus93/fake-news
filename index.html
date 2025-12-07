@@ -723,16 +723,157 @@
         const raw = localStorage.getItem(STORAGE_KEY);
         if (!raw) {
           return [
+        {
+            "id": 1765137736282,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé.",
+            "options": [
             {
-              id: Date.now(),
-              question: "Is the Earth round?",
-              options: [
-                { text: "Yes", isCorrect: true },
-                { text: "No", isCorrect: false }
-              ],
-              points: 1
+                "text": "Archeológovia našli v Egypte neporušenú hrobku starú viac ako 4 000 rokov.",
+                "isCorrect": true
+            },
+            {
+                "text": "Nový algoritmus umelej inteligencie dokáže predpovedať zemetrasenia týždeň dopredu.",
+                "isCorrect": false
             }
-          ];
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139743236,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Japonsko úspešne vyslalo drevený satelit do vesmíru.",
+                "isCorrect": true
+            },
+            {
+                "text": "Vedci zaznamenali prvý prípad rastliny, ktorá dokáže vytvárať elektrinu.",
+                "isCorrect": false
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139766594,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Facebook bude od marca 2026 spoplatnený pre všetkých používateľov.",
+                "isCorrect": false
+            },
+            {
+                "text": "Slovensko plánuje zaviesť digitálny pas pre každého občana do roku 2027.",
+                "isCorrect": true
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139832026,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Nový výskum potvrdil, že spánok dlhší ako 12 hodín denne spôsobuje trvalé poškodenie mozgu.",
+                "isCorrect": false
+            },
+            {
+                "text": "Vedci našli stopu vody na mesiaci Jupiterovho mesiaca Europa.",
+                "isCorrect": true
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139862175,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Európska únia investuje miliardy do obnoviteľnej energie v roku 2025.",
+                "isCorrect": true
+            },
+            {
+                "text": "Sociálne siete budú od januára 2026 zakázané pre ľudí do 21 rokov.",
+                "isCorrect": false
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139877970,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Štúdia tvrdí, že nosenie slúchadiel viac ako 3 hodiny denne znižuje IQ o 20 bodov.",
+                "isCorrect": false
+            },
+            {
+                "text": "Európska únia zavádza jednotnú nabíjačku pre všetky nové mobilné telefóny.",
+                "isCorrect": true
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139902997,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé.",
+            "options": [
+            {
+                "text": "Vedci vytvorili prvú neviditeľnú bundu, ktorá človeka úplne skryje pred kamerami.",
+                "isCorrect": false
+            },
+            {
+                "text": "Na Marse zaznamenali stopy po dávnych riekach a jazerách.",
+                "isCorrect": true
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139936854,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Nová aplikácia dokáže rozpoznať falošné správy pomocou umelej inteligencie.",
+                "isCorrect": true
+            },
+            {
+                "text": "Pitím dvoch litrov koly denne môžete bezpečne schudnúť bez cvičenia.",
+                "isCorrect": false
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139949678,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Vedci našli dôkaz, že čítanie horoskopov zlepšuje pamäť o 50 %.",
+                "isCorrect": false
+            },
+            {
+                "text": "Mesto Bratislava plánuje do roku 2030 vysadiť tisíce nových stromov na zníženie horúčav",
+                "isCorrect": true
+            }
+            ],
+            "points": 1
+        },
+        {
+            "id": 1765139974450,
+            "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+            "options": [
+            {
+                "text": "Sociálne siete testujú funkciu, ktorá automaticky upozorní používateľa, ak zdieľa článok bez prečítania.",
+                "isCorrect": true
+            },
+            {
+                "text": "Nový zákon prikazuje žiakom mať na domácej úlohe minimálne 3 lajky od spolužiakov, inak je neplatná.",
+                "isCorrect": false
+            }
+            ],
+            "points": 1
+        }
+]
         }
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed) || parsed.length === 0) {
@@ -742,16 +883,157 @@
       } catch (e) {
         console.warn("Failed to load quiz from storage, using default.", e);
         return [
-          {
-            id: Date.now(),
-            question: "Is the Earth round?",
-            options: [
-              { text: "Yes", isCorrect: true },
-              { text: "No", isCorrect: false }
-            ],
-            points: 1
-          }
-        ];
+  {
+    "id": 1765137736282,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé.",
+    "options": [
+      {
+        "text": "Archeológovia našli v Egypte neporušenú hrobku starú viac ako 4 000 rokov.",
+        "isCorrect": true
+      },
+      {
+        "text": "Nový algoritmus umelej inteligencie dokáže predpovedať zemetrasenia týždeň dopredu.",
+        "isCorrect": false
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139743236,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Japonsko úspešne vyslalo drevený satelit do vesmíru.",
+        "isCorrect": true
+      },
+      {
+        "text": "Vedci zaznamenali prvý prípad rastliny, ktorá dokáže vytvárať elektrinu.",
+        "isCorrect": false
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139766594,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Facebook bude od marca 2026 spoplatnený pre všetkých používateľov.",
+        "isCorrect": false
+      },
+      {
+        "text": "Slovensko plánuje zaviesť digitálny pas pre každého občana do roku 2027.",
+        "isCorrect": true
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139832026,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Nový výskum potvrdil, že spánok dlhší ako 12 hodín denne spôsobuje trvalé poškodenie mozgu.",
+        "isCorrect": false
+      },
+      {
+        "text": "Vedci našli stopu vody na mesiaci Jupiterovho mesiaca Europa.",
+        "isCorrect": true
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139862175,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Európska únia investuje miliardy do obnoviteľnej energie v roku 2025.",
+        "isCorrect": true
+      },
+      {
+        "text": "Sociálne siete budú od januára 2026 zakázané pre ľudí do 21 rokov.",
+        "isCorrect": false
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139877970,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Štúdia tvrdí, že nosenie slúchadiel viac ako 3 hodiny denne znižuje IQ o 20 bodov.",
+        "isCorrect": false
+      },
+      {
+        "text": "Európska únia zavádza jednotnú nabíjačku pre všetky nové mobilné telefóny.",
+        "isCorrect": true
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139902997,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé.",
+    "options": [
+      {
+        "text": "Vedci vytvorili prvú neviditeľnú bundu, ktorá človeka úplne skryje pred kamerami.",
+        "isCorrect": false
+      },
+      {
+        "text": "Na Marse zaznamenali stopy po dávnych riekach a jazerách.",
+        "isCorrect": true
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139936854,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Nová aplikácia dokáže rozpoznať falošné správy pomocou umelej inteligencie.",
+        "isCorrect": true
+      },
+      {
+        "text": "Pitím dvoch litrov koly denne môžete bezpečne schudnúť bez cvičenia.",
+        "isCorrect": false
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139949678,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Vedci našli dôkaz, že čítanie horoskopov zlepšuje pamäť o 50 %.",
+        "isCorrect": false
+      },
+      {
+        "text": "Mesto Bratislava plánuje do roku 2030 vysadiť tisíce nových stromov na zníženie horúčav",
+        "isCorrect": true
+      }
+    ],
+    "points": 1
+  },
+  {
+    "id": 1765139974450,
+    "question": "Odhaľte, ktoré titulky sú falošné a ktoré pravdivé. ",
+    "options": [
+      {
+        "text": "Sociálne siete testujú funkciu, ktorá automaticky upozorní používateľa, ak zdieľa článok bez prečítania.",
+        "isCorrect": true
+      },
+      {
+        "text": "Nový zákon prikazuje žiakom mať na domácej úlohe minimálne 3 lajky od spolužiakov, inak je neplatná.",
+        "isCorrect": false
+      }
+    ],
+    "points": 1
+  }
+]
       }
     }
 

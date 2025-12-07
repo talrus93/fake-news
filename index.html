@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fake news alebo realita?</title>
   <style>
     :root {
@@ -517,6 +518,52 @@
     .result-stats strong {
       color: #e5e7eb;
     }
+
+    /* Bigger fonts & more touch-friendly on phones */
+@media (max-width: 600px) {
+  body {
+    padding: 16px;                 /* a bit less empty space around */
+    
+  }
+
+  .app {
+    width: 100%;
+    padding: 16px;
+
+  }
+
+  .app-title {
+    font-size: 25px;               /* app title */
+  }
+
+  .play-section {
+    padding: 14px 12px;
+  }
+
+  .play-section h2 {
+    font-size: 20px;               /* "Hrať kvíz" title */
+  }
+
+  .play-section p {
+    font-size: 14px;               /* small description text */
+  }
+
+  .quiz-question-text {
+    font-size: 22px;               /* main question text */
+    line-height: 1.3;
+  }
+
+  .answer-btn {
+    font-size: 16px;               /* text on A / B buttons */
+    padding: 12px 14px;
+    min-height: 56px;              /* taller buttons for fingers */
+  }
+
+  .quiz-progress {
+    font-size: 11px;               /* top "Otázka 1 z 10" / Score */
+  }
+}
+
   </style>
 </head>
 <body>
